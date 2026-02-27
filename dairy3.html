@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DairyKart Professional</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --primary:#2874f0;
+ --accent:#ff9f00;
+ --card:#ffffff;
+ --text:#111;
+ --bg:#f1f3f6;
+}
+
+body.dark{
+ --primary:#1d3557;
+ --accent:#e63946;
+ --card:#1e293b;
+ --text:#fff;
+ --bg:#0f172a;
+}
+
+*{
+ margin:0;
+ padding:0;
+ box-sizing:border-box;
+ font-family:'Poppins',sans-serif;
+ transition:all .3s ease;
+}
+
+body{
+ background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),
+ url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80');
+ background-size:cover;
+ background-attachment:fixed;
+ color:var(--text);
+}
+
+/* HEADER */
+header{
+ background:var(--primary);
+ color:white;
+ padding:15px 5%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+}
+
+.search-bar{
+ flex:1;
+ margin:10px 20px;
+}
+
+.search-bar input{
+ width:100%;
+ padding:8px 15px;
+ border-radius:4px;
+ border:none;
+}
+
+.toggle{
+ padding:6px 12px;
+ border:none;
+ background:var(--accent);
+ color:white;
+ border-radius:4px;
+ cursor:pointer;
+}
+
+/* PRODUCT GRID */
+.products{
+ padding:30px 5%;
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:20px;
+}
+
+.card{
+ background:var(--card);
+ border-radius:6px;
+ padding:15px;
+ box-shadow:0 4px 10px rgba(0,0,0,.2);
+ animation:fadeIn .6s ease forwards;
+ opacity:0;
+}
+
+.card img{
+ width:100%;
+ height:160px;
+ object-fit:cover;
+ border-radius:5px;
+}
+
+.card h4{
+ margin:10px 0;
+ color:var(--primary);
+}
+
+.card button{
+ margin-top:8px;
+ padding:6px 10px;
+ background:var(--accent);
+ border:none;
+ color:white;
+ border-radius:4px;
+ cursor:pointer;
+}
+
+.card:hover{
+ transform:translateY(-6px);
+}
+
+/* BILLING */
+.billing{
+ background:var(--card);
+ padding:20px;
+ margin:20px 5%;
+ border-radius:6px;
+ box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+.billing ul{
+ list-style:none;
+ margin:10px 0;
+}
+
+footer{
+ background:var(--primary);
+ color:white;
+ text-align:center;
+ padding:15px;
+ margin-top:20px;
+}
+
+@keyframes fadeIn{
+ to{opacity:1;}
+}
+
+@media(max-width:768px){
+ header{
+  flex-direction:column;
+  gap:10px;
+ }
+}
+</style>
+</head>
+<body>
+
+<header>
+ <h2>DairyKart</h2>
+ <div class="search-bar">
+  <input type="text" id="search" placeholder="Search dairy products...">
+ </div>
+ <button class="toggle" onclick="toggleTheme()">🌙 / ☀</button>
+</header>
+
+<section class="products" id="productList"></section>
+
+<section class="billing">
+ <h3>🧾 Billing Section</h3>
+ <ul id="cart"></ul>
+ <p>Subtotal: ₹<span id="subtotal">0</span></p>
+ <p>GST (5%): ₹<span id="gst">0</span></p>
+ <h3>Total: ₹<span id="total">0</span></h3>
+</section>
+
+<footer>
+ © 2026 DairyKart Professional Store
+</footer>
+
+<script>
+const products=[
+{id:1,name:"Milk",price:60,img:"https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=60"},
+{id:2,name:"Paneer",price:320,img:"https://images.unsplash.com/photo-1604908177522-432ebc7c4b5b?auto=format&fit=crop&w=600&q=60"},
+{id:3,name:"Butter",price:450,img:"https://images.unsplash.com/photo-1587049352851-8d4e89133924?auto=format&fit=crop&w=600&q=60"},
+{id:4,name:"Cheese",price:500,img:"https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=600&q=60"},
+{id:5,name:"Curd",price:80,img:"https://images.unsplash.com/photo-1572441713132-51c75654db73?auto=format&fit=crop&w=600&q=60"},
+{id:6,name:"Ghee",price:700,img:"https://images.unsplash.com/photo-1590080877777-8b4c9a8f9e5e?auto=format&fit=crop&w=600&q=60"},
+{id:7,name:"Lassi",price:50,img:"https://images.unsplash.com/photo-1605475123132-9c6d5c0e5470?auto=format&fit=crop&w=600&q=60"},
+{id:8,name:"Yogurt",price:120,img:"https://images.unsplash.com/photo-1598514982426-7a4e4ac7c5f3?auto=format&fit=crop&w=600&q=60"},
+{id:9,name:"Cream",price:200,img:"https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?auto=format&fit=crop&w=600&q=60"},
+{id:10,name:"Khoya",price:350,img:"https://images.unsplash.com/photo-1604908554167-26dca9bdbd17?auto=format&fit=crop&w=600&q=60"},
+{id:11,name:"Buttermilk",price:40,img:"https://images.unsplash.com/photo-1587202372775-d4b8d9e65a8d?auto=format&fit=crop&w=600&q=60"},
+{id:12,name:"Flavored Milk",price:90,img:"https://images.unsplash.com/photo-1587202372639-dcced3e38e63?auto=format&fit=crop&w=600&q=60"},
+{id:13,name:"Mozzarella",price:600,img:"https://images.unsplash.com/photo-1604908177522-432ebc7c4b5b?auto=format&fit=crop&w=600&q=60"},
+{id:14,name:"Swiss Cheese",price:650,img:"https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=600&q=60"},
+{id:15,name:"Organic Milk",price:75,img:"https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=60"},
+{id:16,name:"Low Fat Milk",price:55,img:"https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=60"},
+{id:17,name:"Greek Yogurt",price:180,img:"https://images.unsplash.com/photo-1598514982426-7a4e4ac7c5f3?auto=format&fit=crop&w=600&q=60"},
+{id:18,name:"Chocolate Milk",price:110,img:"https://images.unsplash.com/photo-1587202372639-dcced3e38e63?auto=format&fit=crop&w=600&q=60"},
+{id:19,name:"Malai",price:150,img:"https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?auto=format&fit=crop&w=600&q=60"},
+{id:20,name:"Ice Cream",price:250,img:"https://images.unsplash.com/photo-1505253758473-96b7015fcd40?auto=format&fit=crop&w=600&q=60"}
+];
+
+let cart=[];
+let subtotal=0;
+
+function loadProducts(filter=""){
+ const list=document.getElementById("productList");
+ list.innerHTML="";
+ products.filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()))
+ .forEach(p=>{
+  list.innerHTML+=`
+  <div class="card">
+   <img src="${p.img}">
+   <h4>${p.name}</h4>
+   <p>₹${p.price}</p>
+   <button onclick="addToCart(${p.id})">Add to Cart</button>
+  </div>`;
+ });
+}
+
+function addToCart(id){
+ const product=products.find(p=>p.id===id);
+ cart.push(product);
+ subtotal+=product.price;
+ updateBill();
+}
+
+function updateBill(){
+ const cartList=document.getElementById("cart");
+ cartList.innerHTML="";
+ cart.forEach(item=>{
+  cartList.innerHTML+=`<li>${item.name} - ₹${item.price}</li>`;
+ });
+ document.getElementById("subtotal").innerText=subtotal;
+ let gst=subtotal*0.05;
+ document.getElementById("gst").innerText=gst.toFixed(2);
+ document.getElementById("total").innerText=(subtotal+gst).toFixed(2);
+}
+
+document.getElementById("search")
+.addEventListener("input",e=>loadProducts(e.target.value));
+
+function toggleTheme(){
+ document.body.classList.toggle("dark");
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>
